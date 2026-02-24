@@ -1,2 +1,2 @@
 # rohit-web-dev
-This repository is all about git commands 
+This repository is all about Web Development project
