@@ -1,0 +1,818 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithms Complete Reference Guide</title>
+    <link rel="stylesheet" href="style1.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>📚 Algorithms Complete Reference Guide</h1>
+            <p>10 Essential Algorithms with Python & Java Implementations</p>
+            <p>Exam Preparation Notes</p>
+        </header>
+        
+        <div class="toc">
+            <h2>📑 Table of Contents</h2>
+            <ul>
+                <li><a href="#algo1">1. Gale-Shapley Algorithm (Stable Matching)</a></li>
+                <li><a href="#algo2">2. Selection Sort</a></li>
+                <li><a href="#algo3">3. BFS in Directed Graph</a></li>
+                <li><a href="#algo4">4. Topological Ordering</a></li>
+                <li><a href="#algo5">5. Kruskal's Algorithm (MST)</a></li>
+                <li><a href="#algo6">6. Huffman Coding</a></li>
+                <li><a href="#algo7">7. Parallel Merge Sort</a></li>
+                <li><a href="#algo8">8. Interval Scheduling</a></li>
+                <li><a href="#algo9">9. Dijkstra's Algorithm</a></li>
+                <li><a href="#algo10">10. 0/1 Knapsack (DP)</a></li>
+            </ul>
+        </div>
+        
+        <!-- Algorithm 1 -->
+        <div id="algo1" class="algorithm">
+            <h2>1️⃣ Gale-Shapley Algorithm (Stable Matching)</h2>
+            <p>The Gale-Shapley algorithm solves the stable marriage problem where we have equal numbers of men and women, each with their own preference lists. The algorithm produces a stable matching where no unmatched pair would prefer each other over their current partners.</p>
+            
+            <div class="complexity">
+                <h3>⏱️ Time & Space Complexity</h3>
+                <table>
+                    <tr><th>Complexity Type</th><th>Value</th></tr>
+                    <tr><td>Time Complexity (All Cases)</td><td>O(n²)</td></tr>
+                    <tr><td>Space Complexity</td><td>O(n²)</td></tr>
+                </table>
+            </div>
+            
+            <h3>🐍 Python Implementation</h3>
+            <pre><code>def gale_shapley(men_prefs, women_prefs):
+    """
+    Gale-Shapley algorithm for stable matching
+    Time Complexity: O(n²)
+    Space Complexity: O(n²)
+    """
+    n = len(men_prefs)
+    free_men = list(range(n))
+    proposal_index = [0] * n
+    engaged = [-1] * n
+    women_rank = [{man: idx for idx, man in enumerate(women_prefs[i])} 
+                  for i in range(n)]
+    
+    while free_men:
+        man = free_men[0]
+        woman = men_prefs[man][proposal_index[man]]
+        proposal_index[man] += 1
+        
+        if engaged[woman] == -1:
+            engaged[woman] = man
+            free_men.pop(0)
+        else:
+            current_man = engaged[woman]
+            if women_rank[woman][man] < women_rank[woman][current_man]:
+                engaged[woman] = man
+                free_men.pop(0)
+                free_men.append(current_man)
+    
+    return engaged
+
+# Test
+men_prefs = [[0,1,2], [1,0,2], [0,1,2]]
+women_prefs = [[1,0,2], [0,1,2], [0,1,2]]
+result = gale_shapley(men_prefs, women_prefs)
+print("Stable matching:", result)</code></pre>
+            
+            <h3>☕ Java Implementation</h3>
+            <pre><code>import java.util.*;
+
+public class GaleShapley {
+    public static int[] galeShapley(int[][] menPrefs, int[][] womenPrefs) {
+        int n = menPrefs.length;
+        Queue&lt;Integer&gt; freeMen = new LinkedList&lt;&gt;();
+        for (int i = 0; i < n; i++) freeMen.add(i);
+        
+        int[] proposalIndex = new int[n];
+        int[] engaged = new int[n];
+        Arrays.fill(engaged, -1);
+        
+        int[][] womenRank = new int[n][n];
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                womenRank[i][womenPrefs[i][j]] = j;
+            }
+        }
+        
+        while (!freeMen.isEmpty()) {
+            int man = freeMen.poll();
+            int woman = menPrefs[man][proposalIndex[man]++];
+            
+            if (engaged[woman] == -1) {
+                engaged[woman] = man;
+            } else {
+                int currentMan = engaged[woman];
+                if (womenRank[woman][man] < womenRank[woman][currentMan]) {
+                    engaged[woman] = man;
+                    freeMen.add(currentMan);
+                } else {
+                    freeMen.add(man);
+                }
+            }
+        }
+        return engaged;
+    }
+}</code></pre>
+            
+            <div class="key-points">
+                <h3>📌 Key Points for Exam</h3>
+                <ul>
+                    <li>Always produces a stable matching</li>
+                    <li>Man-optimal: Each man gets the best possible partner among all stable matchings</li>
+                    <li>Woman-pessimal: Each woman gets the worst possible partner among all stable matchings</li>
+                    <li>Running time is O(n²) regardless of input</li>
+                    <li>Can be extended to hospital-resident matching problem</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Algorithm 2 -->
+        <div id="algo2" class="algorithm">
+            <h2>2️⃣ Selection Sort</h2>
+            <p>Selection sort is an in-place comparison sorting algorithm that divides the input list into sorted and unsorted regions. It repeatedly selects the smallest element from the unsorted region and swaps it with the first element of the unsorted region.</p>
+            
+            <div class="complexity">
+                <h3>⏱️ Time & Space Complexity</h3>
+                <table>
+                    <tr><th>Complexity Type</th><th>Value</th></tr>
+                    <tr><td>Best Case Time</td><td>O(n²)</td></tr>
+                    <tr><td>Average Case Time</td><td>O(n²)</td></tr>
+                    <tr><td>Worst Case Time</td><td>O(n²)</td></tr>
+                    <tr><td>Space Complexity</td><td>O(1)</td></tr>
+                </table>
+            </div>
+            
+            <h3>🐍 Python Implementation</h3>
+            <pre><code>def selection_sort(arr):
+    """
+    Selection Sort Algorithm
+    Time Complexity: O(n²) for all cases
+    Space Complexity: O(1)
+    """
+    n = len(arr)
+    for i in range(n):
+        min_idx = i
+        for j in range(i + 1, n):
+            if arr[j] < arr[min_idx]:
+                min_idx = j
+        arr[i], arr[min_idx] = arr[min_idx], arr[i]
+    return arr
+
+# Test
+arr = [64, 25, 12, 22, 11]
+print("Sorted array:", selection_sort(arr.copy()))</code></pre>
+            
+            <div class="key-points">
+                <h3>📌 Key Points for Exam</h3>
+                <ul>
+                    <li>In-place algorithm: No extra space required</li>
+                    <li>Unstable sort: Does not preserve relative order of equal elements</li>
+                    <li>Performs minimum number of swaps: O(n) swaps</li>
+                    <li>Good for small datasets or when memory is limited</li>
+                    <li>Always O(n²) regardless of input order</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Algorithm 3 -->
+        <div id="algo3" class="algorithm">
+            <h2>3️⃣ BFS in Directed Graph</h2>
+            <p>Breadth-First Search (BFS) is a graph traversal algorithm that explores vertices in order of their distance from the source node. It uses a queue data structure and is particularly useful for finding shortest paths in unweighted graphs.</p>
+            
+            <div class="complexity">
+                <h3>⏱️ Time & Space Complexity</h3>
+                 <table>
+                    <tr><th>Complexity Type</th><th>Value</th></tr>
+                    <tr><td>Time Complexity</td><td>O(V + E)</td></tr>
+                    <tr><td>Space Complexity</td><td>O(V)</td></tr>
+                 </table>
+            </div>
+            
+            <h3>🐍 Python Implementation</h3>
+            <pre><code>from collections import deque
+
+def bfs_reachable(graph, start):
+    """
+    BFS to find all reachable nodes
+    Time Complexity: O(V + E)
+    Space Complexity: O(V)
+    """
+    visited = set()
+    queue = deque([start])
+    visited.add(start)
+    reachable_nodes = []
+    
+    while queue:
+        vertex = queue.popleft()
+        reachable_nodes.append(vertex)
+        
+        for neighbor in graph.get(vertex, []):
+            if neighbor not in visited:
+                visited.add(neighbor)
+                queue.append(neighbor)
+    
+    return reachable_nodes
+
+# Test
+graph = {
+    0: [1, 2],
+    1: [2],
+    2: [3],
+    3: [],
+    4: [0]
+}
+print("Nodes reachable from 0:", bfs_reachable(graph, 0))</code></pre>
+            
+            <div class="key-points">
+                <h3>📌 Key Points for Exam</h3>
+                <ul>
+                    <li>Uses queue data structure (FIFO)</li>
+                    <li>Finds shortest path in unweighted graphs</li>
+                    <li>Can detect if graph is bipartite</li>
+                    <li>Used in web crawling, social networks, GPS navigation</li>
+                    <li>Memory requirement is O(V) for storing visited nodes</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Algorithm 4 -->
+        <div id="algo4" class="algorithm">
+            <h2>4️⃣ Topological Ordering</h2>
+            <p>Topological ordering of a Directed Acyclic Graph (DAG) is a linear ordering of vertices such that for every directed edge (u,v), vertex u comes before v in the ordering. Kahn's algorithm uses indegree counts to achieve this ordering.</p>
+            
+            <div class="complexity">
+                <h3>⏱️ Time & Space Complexity</h3>
+                 <table>
+                    <tr><th>Complexity Type</th><th>Value</th></tr>
+                    <tr><td>Time Complexity</td><td>O(V + E)</td></tr>
+                    <tr><td>Space Complexity</td><td>O(V)</td></tr>
+                 </table>
+            </div>
+            
+            <h3>🐍 Python Implementation</h3>
+            <pre><code>from collections import deque
+
+def topological_sort_kahn(graph, vertices):
+    """
+    Kahn's Algorithm for Topological Sort
+    Time Complexity: O(V + E)
+    Space Complexity: O(V)
+    """
+    indegree = {v: 0 for v in vertices}
+    for v in vertices:
+        for neighbor in graph.get(v, []):
+            indegree[neighbor] += 1
+    
+    queue = deque([v for v in vertices if indegree[v] == 0])
+    result = []
+    
+    while queue:
+        vertex = queue.popleft()
+        result.append(vertex)
+        
+        for neighbor in graph.get(vertex, []):
+            indegree[neighbor] -= 1
+            if indegree[neighbor] == 0:
+                queue.append(neighbor)
+    
+    if len(result) != len(vertices):
+        return None  # Cycle detected
+    return result
+
+# Test
+graph = {0: [1, 2], 1: [3], 2: [3], 3: [4], 4: []}
+vertices = [0, 1, 2, 3, 4]
+print("Topological order:", topological_sort_kahn(graph, vertices))</code></pre>
+            
+            <div class="key-points">
+                <h3>📌 Key Points for Exam</h3>
+                <ul>
+                    <li>Only possible for Directed Acyclic Graphs (DAGs)</li>
+                    <li>Multiple valid topological orders may exist</li>
+                    <li>Can detect cycles in directed graphs</li>
+                    <li>Used in scheduling, dependency resolution, course prerequisites</li>
+                    <li>Kahn's algorithm uses indegree concept</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Algorithm 5 -->
+        <div id="algo5" class="algorithm">
+            <h2>5️⃣ Kruskal's Algorithm (Minimum Spanning Tree)</h2>
+            <p>Kruskal's algorithm finds the Minimum Spanning Tree (MST) of a connected undirected graph by repeatedly adding the smallest edge that doesn't create a cycle. It uses Union-Find data structure for cycle detection.</p>
+            
+            <div class="complexity">
+                <h3>⏱️ Time & Space Complexity</h3>
+                 <table>
+                    <tr><th>Complexity Type</th><th>Value</th></tr>
+                    <tr><td>Time Complexity</td><td>O(E log E) or O(E log V)</td></tr>
+                    <tr><td>Space Complexity</td><td>O(V + E)</td></tr>
+                 </table>
+            </div>
+            
+            <h3>🐍 Python Implementation</h3>
+            <pre><code>class UnionFind:
+    def __init__(self, n):
+        self.parent = list(range(n))
+        self.rank = [0] * n
+    
+    def find(self, x):
+        if self.parent[x] != x:
+            self.parent[x] = self.find(self.parent[x])
+        return self.parent[x]
+    
+    def union(self, x, y):
+        px, py = self.find(x), self.find(y)
+        if px == py:
+            return False
+        if self.rank[px] < self.rank[py]:
+            self.parent[px] = py
+        elif self.rank[px] > self.rank[py]:
+            self.parent[py] = px
+        else:
+            self.parent[py] = px
+            self.rank[px] += 1
+        return True
+
+def kruskal(vertices, edges):
+    edges.sort(key=lambda x: x[2])
+    uf = UnionFind(vertices)
+    mst = []
+    total_cost = 0
+    
+    for u, v, weight in edges:
+        if uf.union(u, v):
+            mst.append((u, v, weight))
+            total_cost += weight
+    
+    return mst, total_cost
+
+# Test
+edges = [(0, 1, 10), (0, 2, 6), (0, 3, 5), (1, 3, 15), (2, 3, 4)]
+mst, cost = kruskal(4, edges)
+print("MST edges:", mst)
+print("Total cost:", cost)</code></pre>
+            
+            <div class="key-points">
+                <h3>📌 Key Points for Exam</h3>
+                <ul>
+                    <li>Greedy algorithm - always picks smallest edge</li>
+                    <li>Uses Union-Find for cycle detection</li>
+                    <li>Works for disconnected graphs (produces forest)</li>
+                    <li>Time dominated by sorting edges</li>
+                    <li>Prim's algorithm is alternative for dense graphs</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Algorithm 6 -->
+        <div id="algo6" class="algorithm">
+            <h2>6️⃣ Huffman Coding</h2>
+            <p>Huffman coding is a lossless data compression algorithm that assigns variable-length codes to characters based on their frequencies. More frequent characters get shorter codes, achieving optimal prefix-free encoding.</p>
+            
+            <div class="complexity">
+                <h3>⏱️ Time & Space Complexity</h3>
+                 <table>
+                    <tr><th>Complexity Type</th><th>Value</th></tr>
+                    <tr><td>Time Complexity</td><td>O(n log n)</td></tr>
+                    <tr><td>Space Complexity</td><td>O(n)</td></tr>
+                 </table>
+            </div>
+            
+            <h3>🐍 Python Implementation</h3>
+            <pre><code>import heapq
+from collections import Counter
+
+class HuffmanNode:
+    def __init__(self, char, freq):
+        self.char = char
+        self.freq = freq
+        self.left = None
+        self.right = None
+    
+    def __lt__(self, other):
+        return self.freq < other.freq
+
+def build_huffman_tree(text):
+    freq = Counter(text)
+    heap = [HuffmanNode(char, freq) for char, freq in freq.items()]
+    heapq.heapify(heap)
+    
+    while len(heap) > 1:
+        left = heapq.heappop(heap)
+        right = heapq.heappop(heap)
+        merged = HuffmanNode(None, left.freq + right.freq)
+        merged.left = left
+        merged.right = right
+        heapq.heappush(heap, merged)
+    
+    return heap[0] if heap else None
+
+def generate_codes(node, code="", codes=None):
+    if codes is None:
+        codes = {}
+    if node is None:
+        return codes
+    if node.char is not None:
+        codes[node.char] = code
+    generate_codes(node.left, code + "0", codes)
+    generate_codes(node.right, code + "1", codes)
+    return codes
+
+# Test
+text = "huffman coding"
+encoded, codes, root = huffman_encoding(text)
+print("Huffman Codes:", codes)
+print("Encoded:", encoded)</code></pre>
+            
+            <div class="key-points">
+                <h3>📌 Key Points for Exam</h3>
+                <ul>
+                    <li>Optimal prefix-free encoding</li>
+                    <li>Greedy algorithm - always picks smallest frequencies</li>
+                    <li>Used in ZIP, JPEG, MP3 compression</li>
+                    <li>No codeword is prefix of another</li>
+                    <li>Tree is full binary tree (all internal nodes have 2 children)</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Algorithm 7 -->
+        <div id="algo7" class="algorithm">
+            <h2>7️⃣ Parallel Merge Sort</h2>
+            <p>Parallel merge sort divides the array into smaller subarrays that are sorted concurrently using multiple processors or threads. The divide-and-conquer nature of merge sort makes it naturally parallelizable.</p>
+            
+            <div class="complexity">
+                <h3>⏱️ Time & Space Complexity</h3>
+                 <table>
+                    <tr><th>Complexity Type</th><th>Value</th></tr>
+                    <tr><td>Sequential Time</td><td>O(n log n)</td></tr>
+                    <tr><td>Parallel Time</td><td>O((n log n)/p)</td></tr>
+                    <tr><td>Space Complexity</td><td>O(n)</td></tr>
+                 </table>
+            </div>
+            
+            <h3>🐍 Python Implementation</h3>
+            <pre><code>import multiprocessing as mp
+import time
+import random
+
+def merge(left, right):
+    result = []
+    i = j = 0
+    while i < len(left) and j < len(right):
+        if left[i] <= right[j]:
+            result.append(left[i])
+            i += 1
+        else:
+            result.append(right[j])
+            j += 1
+    result.extend(left[i:])
+    result.extend(right[j:])
+    return result
+
+def parallel_merge_sort(arr, depth=0, max_depth=3):
+    if len(arr) <= 1:
+        return arr
+    
+    mid = len(arr) // 2
+    
+    if depth < max_depth and mp.cpu_count() > 1:
+        with mp.Pool(2) as pool:
+            left_result = pool.apply_async(parallel_merge_sort, 
+                                          (arr[:mid], depth+1, max_depth))
+            right_result = pool.apply_async(parallel_merge_sort, 
+                                           (arr[mid:], depth+1, max_depth))
+            left, right = left_result.get(), right_result.get()
+    else:
+        left = parallel_merge_sort(arr[:mid], depth+1, max_depth)
+        right = parallel_merge_sort(arr[mid:], depth+1, max_depth)
+    
+    return merge(left, right)
+
+# Performance test
+arr = [random.randint(1, 10000) for _ in range(10000)]
+start = time.time()
+sorted_arr = parallel_merge_sort(arr)
+print(f"Time taken: {time.time() - start:.4f} seconds")</code></pre>
+            
+            <div class="key-points">
+                <h3>📌 Key Points for Exam</h3>
+                <ul>
+                    <li>Divide-and-conquer algorithm</li>
+                    <li>Fork/Join framework in Java, multiprocessing in Python</li>
+                    <li>Speedup depends on number of processors</li>
+                    <li>Amdahl's law: speedup limited by sequential portion</li>
+                    <li>Load balancing important for efficiency</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Algorithm 8 -->
+        <div id="algo8" class="algorithm">
+            <h2>8️⃣ Interval Scheduling</h2>
+            <p>Interval scheduling problem: Given a set of intervals with start and finish times, select the maximum number of non-overlapping intervals. The greedy algorithm that selects intervals with earliest finish time is optimal.</p>
+            
+            <div class="complexity">
+                <h3>⏱️ Time & Space Complexity</h3>
+                 <table>
+                    <tr><th>Complexity Type</th><th>Value</th></tr>
+                    <tr><td>Unweighted Time</td><td>O(n log n)</td></tr>
+                    <tr><td>Weighted Time</td><td>O(n log n)</td></tr>
+                    <tr><td>Space Complexity</td><td>O(n)</td></tr>
+                 </table>
+            </div>
+            
+            <h3>🐍 Python Implementation</h3>
+            <pre><code>def interval_scheduling(intervals):
+    """
+    Greedy algorithm for interval scheduling
+    Time Complexity: O(n log n) for sorting
+    Space Complexity: O(n)
+    """
+    intervals.sort(key=lambda x: x[1])
+    
+    selected = []
+    last_finish = float('-inf')
+    
+    for start, finish in intervals:
+        if start >= last_finish:
+            selected.append((start, finish))
+            last_finish = finish
+    
+    return selected
+
+def weighted_interval_scheduling(intervals):
+    """
+    Dynamic programming for weighted interval scheduling
+    """
+    intervals.sort(key=lambda x: x[1])
+    n = len(intervals)
+    start = [i[0] for i in intervals]
+    finish = [i[1] for i in intervals]
+    weight = [i[2] for i in intervals]
+    
+    def find_last_non_conflict(index):
+        low, high = 0, index - 1
+        while low <= high:
+            mid = (low + high) // 2
+            if finish[mid] <= start[index]:
+                if finish[mid + 1] <= start[index]:
+                    low = mid + 1
+                else:
+                    return mid
+            else:
+                high = mid - 1
+        return -1
+    
+    dp = [0] * n
+    dp[0] = weight[0]
+    
+    for i in range(1, n):
+        include = weight[i]
+        last = find_last_non_conflict(i)
+        if last != -1:
+            include += dp[last]
+        dp[i] = max(include, dp[i-1])
+    
+    return dp[n-1]
+
+# Test
+intervals = [(1, 3), (2, 5), (3, 9), (6, 8)]
+print("Maximum intervals:", len(interval_scheduling(intervals)))</code></pre>
+            
+            <div class="key-points">
+                <h3>📌 Key Points for Exam</h3>
+                <ul>
+                    <li>Greedy algorithm optimal for unweighted case</li>
+                    <li>Earliest finish time gives optimal solution</li>
+                    <li>Weighted version requires dynamic programming</li>
+                    <li>Applications: task scheduling, resource allocation</li>
+                    <li>Can be extended to interval partitioning</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Algorithm 9 -->
+        <div id="algo9" class="algorithm">
+            <h2>9️⃣ Dijkstra's Algorithm</h2>
+            <p>Dijkstra's algorithm finds the shortest paths from a source vertex to all other vertices in a weighted graph with non-negative edge weights. It uses a greedy approach with a priority queue.</p>
+            
+            <div class="complexity">
+                <h3>⏱️ Time & Space Complexity</h3>
+                 <table>
+                    <tr><th>Complexity Type</th><th>Value</th></tr>
+                    <tr><td>Time Complexity</td><td>O((V + E) log V)</td></tr>
+                    <tr><td>Space Complexity</td><td>O(V)</td></tr>
+                 </table>
+            </div>
+            
+            <h3>🐍 Python Implementation</h3>
+            <pre><code>import heapq
+
+def dijkstra(graph, start):
+    """
+    Dijkstra's shortest path algorithm
+    Time Complexity: O((V + E) log V) with binary heap
+    Space Complexity: O(V)
+    """
+    distances = {node: float('inf') for node in graph}
+    distances[start] = 0
+    pq = [(0, start)]
+    visited = set()
+    previous = {node: None for node in graph}
+    
+    while pq:
+        current_dist, current = heapq.heappop(pq)
+        
+        if current in visited:
+            continue
+        visited.add(current)
+        
+        if current_dist > distances[current]:
+            continue
+        
+        for neighbor, weight in graph[current].items():
+            distance = current_dist + weight
+            if distance < distances[neighbor]:
+                distances[neighbor] = distance
+                previous[neighbor] = current
+                heapq.heappush(pq, (distance, neighbor))
+    
+    return distances, previous
+
+# Test
+graph = {
+    'A': {'B': 1, 'C': 4},
+    'B': {'A': 1, 'C': 2, 'D': 5},
+    'C': {'A': 4, 'B': 2, 'D': 1},
+    'D': {'B': 5, 'C': 1}
+}
+distances, previous = dijkstra(graph, 'A')
+print("Shortest distances from A:", distances)</code></pre>
+            
+            <div class="key-points">
+                <h3>📌 Key Points for Exam</h3>
+                <ul>
+                    <li>Works only with non-negative edge weights</li>
+                    <li>Greedy algorithm: always picks closest unvisited vertex</li>
+                    <li>Can be implemented with binary heap for efficiency</li>
+                    <li>Does not work with negative weights (use Bellman-Ford)</li>
+                    <li>Applications: GPS navigation, network routing</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Algorithm 10 -->
+        <div id="algo10" class="algorithm">
+            <h2>🔟 0/1 Knapsack using Dynamic Programming</h2>
+            <p>The 0/1 knapsack problem: Given items with weights and values, and a knapsack with capacity W, select items to maximize total value where each item can be taken at most once. DP solution uses optimal substructure property.</p>
+            
+            <div class="complexity">
+                <h3>⏱️ Time & Space Complexity</h3>
+                 <table>
+                    <tr><th>Complexity Type</th><th>Value</th></tr>
+                    <tr><td>Time Complexity</td><td>O(n × W)</td></tr>
+                    <tr><td>Space Complexity (2D)</td><td>O(n × W)</td></tr>
+                    <tr><td>Space Complexity (1D)</td><td>O(W)</td></tr>
+                 </table>
+            </div>
+            
+            <h3>🐍 Python Implementation</h3>
+            <pre><code>def knapsack_01(weights, values, capacity):
+    """
+    0/1 Knapsack using Dynamic Programming (2D)
+    Time Complexity: O(n * capacity)
+    Space Complexity: O(n * capacity)
+    """
+    n = len(weights)
+    dp = [[0] * (capacity + 1) for _ in range(n + 1)]
+    
+    for i in range(1, n + 1):
+        for w in range(1, capacity + 1):
+            if weights[i-1] <= w:
+                dp[i][w] = max(values[i-1] + dp[i-1][w - weights[i-1]], 
+                              dp[i-1][w])
+            else:
+                dp[i][w] = dp[i-1][w]
+    
+    return dp[n][capacity]
+
+def knapsack_01_optimized(weights, values, capacity):
+    """
+    Space-optimized version
+    Time Complexity: O(n * capacity)
+    Space Complexity: O(capacity)
+    """
+    n = len(weights)
+    dp = [0] * (capacity + 1)
+    
+    for i in range(n):
+        for w in range(capacity, weights[i] - 1, -1):
+            dp[w] = max(dp[w], values[i] + dp[w - weights[i]])
+    
+    return dp[capacity]
+
+# Test
+weights = [2, 3, 4, 5]
+values = [3, 4, 5, 6]
+capacity = 5
+print(f"Maximum value: {knapsack_01(weights, values, capacity)}")
+print(f"Maximum value (optimized): {knapsack_01_optimized(weights, values, capacity)}")</code></pre>
+            
+            <div class="key-points">
+                <h3>📌 Key Points for Exam</h3>
+                <ul>
+                    <li>Classic dynamic programming problem</li>
+                    <li>Optimal substructure: solution depends on subproblems</li>
+                    <li>Overlapping subproblems: DP table stores results</li>
+                    <li>Space optimization: iterate capacity backwards</li>
+                    <li>Not polynomial-time (pseudo-polynomial)</li>
+                    <li>Greedy fails for 0/1 knapsack</li>
+                </ul>
+            </div>
+        </div>
+        
+        <!-- Comprehensive Summary -->
+        <div class="algorithm" style="background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);">
+            <h2>📊 Comprehensive Complexity Summary</h2>
+            
+            <h3>Time Complexity Comparison Table</h3>
+            <table style="width: 100%; border-collapse: collapse; margin: 20px 0;">
+                <thead>
+                    <tr style="background: #667eea; color: white;">
+                        <th style="padding: 10px; text-align: left;">Algorithm</th>
+                        <th style="padding: 10px; text-align: left;">Best Case</th>
+                        <th style="padding: 10px; text-align: left;">Average Case</th>
+                        <th style="padding: 10px; text-align: left;">Worst Case</th>
+                        <th style="padding: 10px; text-align: left;">Space</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr><td style="padding: 8px;">Gale-Shapley</td><td>O(n²)</td><td>O(n²)</td><td>O(n²)</td><td>O(n²)</td></tr>
+                    <tr><td style="padding: 8px;">Selection Sort</td><td>O(n²)</td><td>O(n²)</td><td>O(n²)</td><td>O(1)</td></tr>
+                    <tr><td style="padding: 8px;">BFS</td><td>O(V+E)</td><td>O(V+E)</td><td>O(V+E)</td><td>O(V)</td></tr>
+                    <tr><td style="padding: 8px;">Topological Sort</td><td>O(V+E)</td><td>O(V+E)</td><td>O(V+E)</td><td>O(V)</td></tr>
+                    <tr><td style="padding: 8px;">Kruskal's MST</td><td>O(E log E)</td><td>O(E log E)</td><td>O(E log E)</td><td>O(V+E)</td></tr>
+                    <tr><td style="padding: 8px;">Huffman Coding</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n)</td></tr>
+                    <tr><td style="padding: 8px;">Parallel Merge Sort</td><td>O(n log n/p)</td><td>O(n log n/p)</td><td>O(n log n/p)</td><td>O(n)</td></tr>
+                    <tr><td style="padding: 8px;">Interval Scheduling</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n log n)</td><td>O(n)</td></tr>
+                    <tr><td style="padding: 8px;">Dijkstra's</td><td>O((V+E)log V)</td><td>O((V+E)log V)</td><td>O((V+E)log V)</td><td>O(V)</td></tr>
+                    <tr><td style="padding: 8px;">0/1 Knapsack</td><td>O(nW)</td><td>O(nW)</td><td>O(nW)</td><td>O(nW)</td></tr>
+                </tbody>
+            </table>
+            
+            <h3>🎯 Algorithm Selection Guide</h3>
+            <ul>
+                <li><strong>Stable Matching</strong>: Use Gale-Shapley for pairing problems</li>
+                <li><strong>Small Arrays</strong>: Selection sort for memory-constrained environments</li>
+                <li><strong>Graph Traversal</strong>: BFS for unweighted shortest paths</li>
+                <li><strong>Dependency Resolution</strong>: Topological sort for DAGs</li>
+                <li><strong>Network Design</strong>: Kruskal's for MST in sparse graphs</li>
+                <li><strong>Data Compression</strong>: Huffman coding for lossless compression</li>
+                <li><strong>Large Datasets</strong>: Parallel merge sort for multi-core systems</li>
+                <li><strong>Scheduling</strong>: Interval scheduling for task selection</li>
+                <li><strong>Shortest Path</strong>: Dijkstra for non-negative weights</li>
+                <li><strong>Resource Allocation</strong>: DP knapsack for optimization</li>
+            </ul>
+            
+            <h3>📝 Common Exam Questions</h3>
+            <ol>
+                <li>Prove that Gale-Shapley produces stable matching</li>
+                <li>Why is selection sort not adaptive?</li>
+                <li>When to use BFS vs DFS?</li>
+                <li>Why does topological sort only work on DAGs?</li>
+                <li>Compare Kruskal and Prim's algorithms</li>
+                <li>Why is Huffman coding optimal?</li>
+                <li>Speedup analysis for parallel algorithms (Amdahl's Law)</li>
+                <li>Prove greedy choice property for interval scheduling</li>
+                <li>Why Dijkstra fails with negative weights?</li>
+                <li>Difference between 0/1 and fractional knapsack</li>
+            </ol>
+            
+            <h3>🔑 Important Formulas</h3>
+            <ul>
+                <li><strong>Union-Find</strong>: α(n) - inverse Ackermann function (nearly constant)</li>
+                <li><strong>Amdahl's Law</strong>: S = 1 / ((1-P) + P/N) where P is parallel portion, N is processors</li>
+                <li><strong>Master Theorem</strong>: T(n) = aT(n/b) + f(n)</li>
+                <li><strong>BFS Distance</strong>: d(v) = d(u) + 1 for edge (u,v)</li>
+                <li><strong>Dijkstra Invariant</strong>: dist[u] ≤ dist[v] for processed vertices</li>
+                <li><strong>Knapsack Recurrence</strong>: dp[i][w] = max(dp[i-1][w], val[i] + dp[i-1][w-wt[i]])</li>
+            </ul>
+        </div>
+        
+        <div style="text-align: center; padding: 40px; background: #f8f9fa; color: #666;">
+            <p>📖 Complete Reference Guide - All Algorithms with Complexity Analysis</p>
+            <p>✅ Perfect for Exam Preparation</p>
+            <p>🎓 Study Smart, Excel in Exams!</p>
+        </div>
+    </div>
+</body>
+</html>
